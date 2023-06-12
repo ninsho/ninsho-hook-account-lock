@@ -6,7 +6,6 @@ import { getCurrentTimeDiffInSec, localTimeToUnixTime } from 'ninsho-utils'
  * @param account_unlock_duration_sec 
  * @param options
  *    sendLockNotice: notification preference
- *    resetDueToLockExpiration: In case of exceeding the lock period, the count is unconditionally cleared.
  *    mailSubject: When specified, apply the text.
  *    mailBody: When specified, apply the text.
  * @returns Hook function
@@ -17,8 +16,7 @@ export default function AccountLockHook(
   options?: {
     sendLockNotice?: boolean,
     mailSubject?: string,
-    mailBody?: string,
-    resetDueToLockExpiration?: boolean
+    mailBody?: string
   }
 ) {
 
@@ -47,7 +45,9 @@ export default function AccountLockHook(
         {
           ...req,
           ...{
-            unlock_duration_hour: Math.floor(account_unlock_duration_sec / 60 / 60),
+            unlock_duration_hour: /* istanbul ignore next */ account_unlock_duration_sec
+              ? Math.floor(account_unlock_duration_sec / 60 / 60)
+              : 0,
           }
         }
       )
@@ -94,7 +94,7 @@ export default function AccountLockHook(
 
     if (props.last_failed_attempts_at) {
       const diff = getCurrentTimeDiffInSec(localTimeToUnixTime(props.last_failed_attempts_at))
-      if (diff > account_unlock_duration_sec) {
+      if (account_unlock_duration_sec && diff > account_unlock_duration_sec) {
         failedCount = 0
         nowLocking = false
         Expired = true

@@ -255,6 +255,59 @@ describe('hook-account-lock', () => {
     expect(res2.statusCode).toEqual(200)
   })
 
+  it('200: account_unlock_duration_sec = 0', async () => {
+    const res0_create = await create()
+    // hook
+    const hooks: HooksObjType[] = [
+      {
+        hookPoint: 'beforePasswordCheck',
+        hook: AccountLockHook(
+          3,
+          0, // no recovery
+        )
+      },
+    ]
+    for (let expectStatusCode of [401, 401, 429]) {
+      const res1 = await plugin.loginUser(
+        user.name,
+        user.mail,
+        user.pass + 'XXX',
+        user.ip,
+        user.sessionDevice,
+        {
+          sendCompleatNotice: false,
+          columnToRetrieve: [
+            'failed_attempts',
+            'last_failed_attempts_at'
+          ],
+          hooks: hooks
+        }
+      )
+      if (!!!res1.fail()) throw 1
+      expect(res1.statusCode).toEqual(expectStatusCode)
+    }
+    // wait
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    // test
+    const res2 = await plugin.loginUser(
+      user.name,
+      user.mail,
+      user.pass,
+      user.ip,
+      user.sessionDevice,
+      {
+        sendCompleatNotice: false,
+        columnToRetrieve: [
+          'failed_attempts',
+          'last_failed_attempts_at'
+        ],
+        hooks: hooks
+      }
+    )
+    if (!!!res2.fail()) throw 1
+    expect(res2.statusCode).toEqual(429)
+  })
+
   it('429: correct password in account locking', async () => {
     const res0_create = await create()
     // hook
