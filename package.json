@@ -1,6 +1,6 @@
 {
   "name": "ninsho-hook-account-lock",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Hook plugin for ninsho to lock accounts after multiple failed attempts.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/ninsho/ninsho-hook-account-lock/",
   "dependencies": {
-    "ninsho-base": "^0.0.8",
+    "ninsho-base": "^0.0.9",
     "ninsho-utils": "^0.0.7"
   },
   "devDependencies": {
@@ -37,7 +37,7 @@
     "ninsho-module-mailer": "^0.0.8",
     "ninsho-module-pg": "^0.0.11",
     "ninsho-module-secure": "^0.0.16",
-    "ninsho-plugin-immediately-api": "^0.0.5",
+    "ninsho-plugin-immediately-api": "^0.0.6",
     "rimraf": "^3.0.2",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.2",
